@@ -1,17 +1,23 @@
 package ru.java.praktikum;
 import data.CourierCreate;
 import data.CourierLogin;
+import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertNotNull;
-import static steps.CourierLoginStep.courierLogin;
-import static steps.CreateCourierStep.createCourier;
-import static steps.DeleteCourierStep.courierDelete;
+import static steps.CourierStep.courierLogin;
+import static steps.CourierStep.createCourier;
+
 
 public class CourierLoginTest {
+
+
+    private CourierLoginTest courierStep;
+    private int responseId;
+
     @Before
     public void setUp() {
         String login = RandomStringUtils.randomAlphabetic(7);
@@ -21,9 +27,9 @@ public class CourierLoginTest {
         createCourier(courier);
     }
 
-     @Test
+    @Test
     @DisplayName("Успешная авторизация курьера")
-    public void successCourierLoginTest(){
+    public void successCourierLoginTest() {
         //создание курьера
         String login = RandomStringUtils.randomAlphabetic(7);
         String password = RandomStringUtils.randomAlphabetic(8);
@@ -34,37 +40,47 @@ public class CourierLoginTest {
         CourierLogin courierLog = new CourierLogin(login, password);
         courierLogin(courierLog).then().statusCode(200);
         int responseId = courierLogin(courierLog).then().extract().path("id");
-        //проверка, что запрос возвращает id
-        assertNotNull(responseId);
-        //удаление данных о курьере
-        courierDelete(responseId);
 
     }
+
     //если какого-то поля нет, запрос возвращает ошибку
     @Test
     @DisplayName("Ошибка при авторизации курьера без логина")
-    public void courierLoginWithoutLogin(){
+    public void courierLoginWithoutLogin() {
         CourierLogin courier = new CourierLogin("", "123456");
         courierLogin(courier).then().assertThat().body("message", equalTo("Недостаточно данных для входа"))
                 .and()
                 .statusCode(400);
     }
+
     @Test
     @DisplayName("Ошибка при авторизации курьера без пароля")
-    public void courierLoginWithoutPass(){
+    public void courierLoginWithoutPass() {
         CourierLogin courier = new CourierLogin("Simakov", "");
         courierLogin(courier).then().assertThat().body("message", equalTo("Недостаточно данных для входа"))
                 .and()
                 .statusCode(400);
     }
+
     //система вернёт ошибку, если неправильно указать логин или пароль
     //если авторизоваться под несуществующим пользователем, запрос возвращает ошибку;
     @Test
     @DisplayName("Ошибка при авторизации курьера под неверными учетными данными")
-    public void courierLoginWithInvalidCredentials(){
+    public void courierLoginWithInvalidCredentials() {
         CourierLogin courier = new CourierLogin("Simakov", "4567890");
         courierLogin(courier).then().assertThat().body("message", equalTo("Учетная запись не найдена"))
                 .and()
                 .statusCode(404);
+    }
+
+    @After
+    @Step("Удаление курьера")
+    public void courierDelete() {
+        if (responseId != 0) {
+            courierStep.courierDelete(responseId);
+        }
+    }
+
+    private void courierDelete(int responseId) {
     }
 }
