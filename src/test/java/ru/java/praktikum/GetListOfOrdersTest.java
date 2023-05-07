@@ -10,7 +10,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static steps.AcceptOrderStep.orderAccept;
-import static steps.CourierStep.courierLogin;
+import static steps.CourierLogin.courierLogin;
 import static steps.CourierStep.createCourier;
 import static steps.CreateOrderStep.orderCreate;
 import static steps.GetOrderListStep.getOrderList;

@@ -8,15 +8,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
-import static steps.CourierStep.courierLogin;
+import static org.junit.Assert.assertNotNull;
+import static steps.CourierLogin.courierLogin;
 import static steps.CourierStep.createCourier;
+import static steps.DeleteCourierStep.courierDelete;
 
 
 public class CourierLoginTest {
 
-
-    private CourierLoginTest courierStep;
-    private int responseId;
+    private Integer responseId = null;
 
     @Before
     public void setUp() {
@@ -39,8 +39,8 @@ public class CourierLoginTest {
 
         CourierLogin courierLog = new CourierLogin(login, password);
         courierLogin(courierLog).then().statusCode(200);
-        int responseId = courierLogin(courierLog).then().extract().path("id");
-
+        responseId = courierLogin(courierLog).then().extract().path("id");
+        assertNotNull(responseId);
     }
 
     //если какого-то поля нет, запрос возвращает ошибку
@@ -75,12 +75,10 @@ public class CourierLoginTest {
 
     @After
     @Step("Удаление курьера")
-    public void courierDelete() {
-        if (responseId != 0) {
-            courierStep.courierDelete(responseId);
-        }
-    }
+    public void CourierDelete() {
 
-    private void courierDelete(int responseId) {
+        if (responseId != null) {
+            courierDelete(responseId);
+        }
     }
 }

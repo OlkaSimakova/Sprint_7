@@ -11,27 +11,11 @@ import static steps.RestAssuredClient.getBaseSpec;
 
 public class CourierStep {
     @Step("create courier")
-    public static ValidatableResponse createCourier(CourierCreate courier){
+    public static Response createCourier(CourierCreate courier){
         return given()
                 .spec(getBaseSpec())
                 .body(courier)
                 .when()
-                .post("/api/v1/courier").then();
+                .post("/api/v1/courier");
     }
-
-    @Step("courier login")
-    public static Response courierLogin(CourierLogin courier){
-        return given()
-                .spec(getBaseSpec())
-                .body(courier)
-                .when()
-                .post("/api/v1/courier/login");
-    }
-    @Step("delete courier")
-    public static void courierDelete(int responseId){
-        given()
-                .spec(getBaseSpec())
-                .delete("/api/v1/courier/{id}", responseId);
-    }
-
 }
